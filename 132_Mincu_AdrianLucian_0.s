@@ -1,7 +1,7 @@
 .data
     fs: .asciz "%ld"
     fs1: .asciz "%ld "
-    fs2: .asciz "%s\n"
+    fs2: .asciz "\n"
     fs3: .asciz "%ld\n"
     matrice: .space 40000
     linei: .space 4
@@ -24,6 +24,11 @@ citire:
     pushl %edi
     pushl $fs
     call scanf
+    addl $8,%esp
+
+    pushl 12(%ebp)
+    pushl $matrice
+    call initializare0
     addl $8,%esp
 
     # -400(ebp) = legaturi
@@ -67,8 +72,7 @@ afisare:
 
     lea matrice,%edi
 
-    subl $4,%esp
-    subl $4,%esp
+    subl $8,%esp
 
     movl $0,%eax
     movl $0,%ecx
@@ -95,15 +99,21 @@ afisare:
             call printf
             addl $8,%esp
 
+            pushl $0
+            call fflush
+            addl $4,%esp
+
             movl -8(%ebp),%ecx
 
             add $1,%ecx
             jmp for_coloana
 
         salt:
-            pushl $fs2
-            call printf
-            addl $4,%esp
+            movl $4,%eax
+            movl $1,%ebx
+            movl $fs2,%ecx
+            movl $2,%edx
+            int $0x80
 
             movl -4(%ebp),%eax
             movl $0,%ecx
@@ -125,40 +135,23 @@ initializare0:
     # n = 12(%ebp)
     # matrice = 8(%ebp)
 
-    subl $4,%esp
-
     lea matrice,%edi
-
-    movl $0,%eax
     movl $0,%ecx
 
-    for_linie_2:
-        cmp 12(%ebp),%eax
+    movl $0,%edx
+    movl 12(%ebp),%eax
+    mull %eax
+
+    for:
+        cmp %eax,%ecx
         je iesire_3
 
-        movl %eax,-4(%ebp)
-        for_coloana_2:
-            cmp 12(%ebp),%ecx
-            je salt_2
+        movl $0,(%edi,%ecx,4)
 
-            movl -4(%ebp),%eax
-
-            mov $0,%edx
-            mull 12(%ebp)
-            add %ecx,%eax
-
-            movl $0,(%edi,%eax,4)
-
-            add $1,%ecx
-            jmp for_coloana_2
-
-        salt_2:
-            mov $0,%ecx
-            add $1,%eax
-            jmp for_linie_2
+        add $1,%ecx
+        jmp for
 
     iesire_3:
-        addl $4,%esp
         popl %edi
         popl %ebp
         ret    
@@ -188,11 +181,6 @@ cerinta_1:
     addl $8,%esp
 
     movl %eax,n
-
-    pushl n
-    pushl $matrice
-    call initializare0
-    addl $8,%esp
 
     pushl n
     pushl $matrice
