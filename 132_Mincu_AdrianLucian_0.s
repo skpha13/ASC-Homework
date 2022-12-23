@@ -13,10 +13,11 @@
 
 citire:
     pushl %ebp
-    pushl %edi
     mov %esp,%ebp
+    pushl %edi
+    pushl %esi
     
-    # n= 12(%ebp)
+    # n = 12(%ebp)
     # matrice = 8(%ebp)
 
     lea 12(%ebp),%edi
@@ -25,36 +26,31 @@ citire:
     call scanf
     addl $8,%esp
 
-    pushl 12(%ebp)
-    pushl $fs3
-    call printf
-    addl $8,%esp
-
     # -400(ebp) = legaturi
-    addl $400,%esp
+    subl $400,%esp
     lea -400(%ebp),%edi
     movl $0,%ecx
-
-    # -404(%ebp) = variabila temporara
-    addl $4,%esp
-    movl $3,-404(%ebp)
-
-    pushl 12(%ebp)
-    pushl $fs3
-    call printf
-    addl $8,%esp
 
     citire_legaturi:
         cmp 12(%ebp),%ecx
         je iesire
 
+        pushl %ecx
 
+        lea (%edi,%ecx,4),%esi
+        pushl %esi
+        pushl $fs
+        call scanf
+        addl $8,%esp
 
+        popl %ecx
+    
         addl $1,%ecx
         jmp citire_legaturi
 
     iesire:
-        subl $404,%esp
+        addl $400,%esp
+        popl %esi
         popl %edi
         popl %ebp
         ret
@@ -90,6 +86,8 @@ cerinta_2:
     pushl $matrice
     call citire
     addl $8,%esp
+
+    jmp exit
 
 exit:
     mov $1,%eax
