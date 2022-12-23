@@ -234,11 +234,13 @@ cerinta_1:
     jmp exit
 
 cerinta_2:
-    pushl $n
+    pushl n
     pushl $matrice
     call citire
     addl $8,%esp
 
+    movl %eax,n
+    
     jmp exit
 
 exit:
