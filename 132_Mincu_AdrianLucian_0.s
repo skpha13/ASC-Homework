@@ -38,7 +38,7 @@ citire:
 
     citire_legaturi:
         cmp 12(%ebp),%ecx
-        je iesire
+        je prelucrare_legaturi
 
         pushl %ecx
 
@@ -53,10 +53,46 @@ citire:
         addl $1,%ecx
         jmp citire_legaturi
 
+    prelucrare_legaturi:
+        subl $8,%esp
+        movl $0,%eax
+
+        # %eax = index linie
+        # -404(%ebp) = index coloana
+        parcurgere_legaturi:
+            cmp 12(%ebp),%eax
+            je iesire
+
+            movl %eax,-408(%ebp)
+            movl (%edi,%eax,4),%edx
+            mov $0,%ecx
+            citire_valori:
+                cmp %edx,%ecx
+                je salt_2
+                
+                movl -408(%ebp),%eax
+
+                lea -404(%ebp),%esi
+                pushl %esi
+                pushl $fs
+                call scanf
+                addl $8,%esp
+
+                mull 12(%ebp)
+                addl -404(%ebp),%eax
+                movl $1,(%edi,%eax,4)
+
+                add $1,%ecx
+                jmp citire_valori
+
+            salt_2:
+                add $1,%eax
+                jmp parcurgere_legaturi
+
     iesire:
         movl 12(%ebp),%eax
 
-        addl $400,%esp
+        addl $408,%esp
         popl %esi
         popl %edi
         popl %ebp
