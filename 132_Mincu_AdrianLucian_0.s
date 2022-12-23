@@ -72,20 +72,29 @@ citire:
                 
                 movl -408(%ebp),%eax
 
+                pusha
+
                 lea -404(%ebp),%esi
                 pushl %esi
                 pushl $fs
                 call scanf
                 addl $8,%esp
 
+                popa
+                pushl %edx
+
+                test:
                 mull 12(%ebp)
                 addl -404(%ebp),%eax
                 movl $1,(%edi,%eax,4)
+
+                popl %edx
 
                 add $1,%ecx
                 jmp citire_valori
 
             salt_2:
+                movl -408(%ebp),%eax
                 add $1,%eax
                 jmp parcurgere_legaturi
 
@@ -124,7 +133,6 @@ afisare:
             cmp 12(%ebp),%ecx
             je salt
 
-            mov $0,%edx
             mull 12(%ebp)
             add %ecx,%eax
 
