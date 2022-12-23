@@ -83,10 +83,10 @@ citire:
                 popa
                 pushl %edx
 
-                test:
+                lea matrice,%esi
                 mull 12(%ebp)
                 addl -404(%ebp),%eax
-                movl $1,(%edi,%eax,4)
+                movl $1,(%esi,%eax,4)
 
                 popl %edx
 
