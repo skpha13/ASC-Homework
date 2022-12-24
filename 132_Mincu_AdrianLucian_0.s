@@ -4,7 +4,7 @@
     fs2: .asciz "\n"
     fs3: .asciz "%ld\n"
     matrice: .space 40000
-    c: .space 40000
+    mres: .space 40000
     n: .space 4
     aux: .space 4
 
@@ -199,16 +199,54 @@ initializare0:
         popl %ebp
         ret    
 
-inmultire:
+matrix_mult:
     pushl %ebp
     mov %esp,%ebp
+    pushl %edi
+    pushl %esi
 
-    # n = 16(%ebp)
+    # n = 20(%ebp)
+    # mres = 16(%ebp)
     # matrice = 12(%ebp)
-    # c = 8(%ebp)
+    # matrice = 8(%ebp)
 
-    popl %ebp
-    ret
+    subl $8,%esp
+
+    movl $0,%eax
+    movl $0,%ecx
+
+    mov 8(%ebp),%edi
+    mov 12(%ebp),%esi
+
+    for_linie_2:
+        cmp 20(%ebp),%eax
+        je iesire_4
+
+        movl %eax,-4(%ebp)
+        for_coloana_2:
+            movl -4(%ebp),%eax
+            cmp 20(%ebp),%ecx
+            je salt_3
+
+            mull 20(%ebp)
+            add %ecx,%eax
+
+            add $1,%ecx
+            jmp for_coloana_2
+
+        salt_3:
+            movl -4(%ebp),%eax
+            movl $0,%ecx
+
+            add $1,%eax
+            jmp for_linie_2
+
+    iesire_4:
+        addl $8,%esp
+        popl %esi
+        popl %edi
+        popl %ebp
+        ret
 
 .global main
 
@@ -252,18 +290,19 @@ cerinta_2:
     movl %eax,n
 
     pushl n
-    pushl $c
+    pushl $mres
     call initializare0
     addl $8,%esp
 
     pushl n
+    pushl $mres
     pushl $matrice
-    pushl $c
-    call inmultire
+    pushl $matrice
+    call matrix_mult
     addl $12,%esp
 
     pushl n
-    pushl $c
+    pushl $mres
     call afisare
     addl $8,%esp
     
