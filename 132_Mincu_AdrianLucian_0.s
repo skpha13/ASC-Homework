@@ -253,7 +253,7 @@ matrix_mult:
                 mull 20(%ebp)
                 addl %ecx,%eax
                 lea mres,%edi
-                movl %ebx,(%edi,%eax,4)
+                addl %ebx,(%edi,%eax,4)
 
                 addl $1,-8(%ebp)
                 jmp for_k
