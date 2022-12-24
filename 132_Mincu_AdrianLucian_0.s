@@ -204,6 +204,7 @@ matrix_mult:
     mov %esp,%ebp
     pushl %edi
     pushl %esi
+    pushl %ebx
 
     # n = 20(%ebp)
     # mres = 16(%ebp)
@@ -214,6 +215,7 @@ matrix_mult:
 
     movl $0,%eax
     movl $0,%ecx
+    movl $0,-8(%ebp)
 
     mov 8(%ebp),%edi
     mov 12(%ebp),%esi
@@ -224,15 +226,42 @@ matrix_mult:
 
         movl %eax,-4(%ebp)
         for_coloana_2:
-            movl -4(%ebp),%eax
             cmp 20(%ebp),%ecx
             je salt_3
 
-            mull 20(%ebp)
-            add %ecx,%eax
+            for_k:
+                movl -8(%ebp),%ebx
+                cmp 20(%ebp),%ebx
+                je salt_k
 
-            add $1,%ecx
-            jmp for_coloana_2
+                movl -4(%ebp),%eax
+                mull 20(%ebp)
+                addl -8(%ebp),%eax
+                movl %eax,%ebx
+
+                movl -8(%ebp),%eax
+                mull 20(%ebp)
+                addl %ecx,%eax
+
+                mov 8(%ebp),%edi
+                movl (%edi,%eax,4),%eax
+                movl (%esi,%ebx,4),%ebx
+                mull %ebx
+                movl %eax,%ebx
+
+                movl -4(%ebp),%eax
+                mull 20(%ebp)
+                addl %ecx,%eax
+                lea mres,%edi
+                movl %ebx,(%edi,%eax,4)
+
+                addl $1,-8(%ebp)
+                jmp for_k
+            
+            salt_k:
+                movl $0,-8(%ebp)
+                add $1,%ecx
+                jmp for_coloana_2
 
         salt_3:
             movl -4(%ebp),%eax
@@ -243,6 +272,7 @@ matrix_mult:
 
     iesire_4:
         addl $8,%esp
+        popl %ebx
         popl %esi
         popl %edi
         popl %ebp
