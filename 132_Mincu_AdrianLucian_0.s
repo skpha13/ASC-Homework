@@ -4,8 +4,7 @@
     fs2: .asciz "\n"
     fs3: .asciz "%ld\n"
     matrice: .space 40000
-    linei: .space 4
-    coloana: .space 4
+    c: .space 40000
     n: .space 4
     aux: .space 4
 
@@ -83,7 +82,7 @@ citire:
                 popa
                 pushl %edx
 
-                lea matrice,%esi
+                mov 8(%ebp),%esi
                 mull 12(%ebp)
                 addl -404(%ebp),%eax
                 movl $1,(%esi,%eax,4)
@@ -115,7 +114,7 @@ afisare:
     # n = 12(%ebp)
     # matrice = 8(%ebp)
 
-    lea matrice,%edi
+    mov 8(%ebp),%edi
 
     subl $8,%esp
 
@@ -179,7 +178,7 @@ initializare0:
     # n = 12(%ebp)
     # matrice = 8(%ebp)
 
-    lea matrice,%edi
+    mov 8(%ebp),%edi
     movl $0,%ecx
 
     movl $0,%edx
@@ -199,6 +198,17 @@ initializare0:
         popl %edi
         popl %ebp
         ret    
+
+inmultire:
+    pushl %ebp
+    mov %esp,%ebp
+
+    # n = 16(%ebp)
+    # matrice = 12(%ebp)
+    # c = 8(%ebp)
+
+    popl %ebp
+    ret
 
 .global main
 
@@ -240,6 +250,22 @@ cerinta_2:
     addl $8,%esp
 
     movl %eax,n
+
+    pushl n
+    pushl $c
+    call initializare0
+    addl $8,%esp
+
+    pushl n
+    pushl $matrice
+    pushl $c
+    call inmultire
+    addl $12,%esp
+
+    pushl n
+    pushl $c
+    call afisare
+    addl $8,%esp
     
     jmp exit
 
