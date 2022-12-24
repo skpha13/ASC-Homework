@@ -4,9 +4,13 @@
     fs2: .asciz "\n"
     fs3: .asciz "%ld\n"
     matrice: .space 40000
+    matrice_copy: .space 40000
     mres: .space 40000
     n: .space 4
     aux: .space 4
+    k: .space 4
+    i: .space 4
+    j: .space 4
 
 .text
 
@@ -319,24 +323,93 @@ cerinta_2:
 
     movl %eax,n
 
-    pushl n
-    pushl $mres
-    call initializare0
+    pushl $k
+    pushl $fs
+    call scanf
     addl $8,%esp
 
-    pushl n
-    pushl $mres
-    pushl $matrice
-    pushl $matrice
-    call matrix_mult
-    addl $12,%esp
-
-    pushl n
-    pushl $mres
-    call afisare
+    pushl $i
+    pushl $fs
+    call scanf
     addl $8,%esp
-    
-    jmp exit
+
+    pushl $j
+    pushl $fs
+    call scanf
+    addl $8,%esp
+
+    movl n,%eax
+    mull %eax
+    movl $0,%ecx
+    lea matrice,%edi
+    lea matrice_copy,%esi
+    for_copy:
+        cmp %eax,%ecx
+        je jump
+
+        movl (%edi,%ecx,4),%ebx
+        movl %ebx,(%esi,%ecx,4)
+
+        addl $1,%ecx
+        jmp for_copy
+
+    jump:
+        movl k,%ecx
+        subl $1,%ecx
+        loop_lungime:
+            cmp $0,%ecx
+            je print
+
+            movl %ecx,aux
+
+            pushl n
+            pushl $mres
+            call initializare0
+            addl $8,%esp
+
+            pushl n
+            pushl $mres
+            pushl $matrice_copy
+            pushl $matrice
+            call matrix_mult
+            addl $12,%esp
+
+            movl n,%eax
+            mull %eax
+            movl $0,%ecx
+            lea mres,%edi
+            lea matrice_copy,%esi
+            for_copy_2:
+                cmp %eax,%ecx
+                je break
+
+                movl (%edi,%ecx,4),%ebx
+                movl %ebx,(%esi,%ecx,4)
+
+                addl $1,%ecx
+                jmp for_copy_2
+
+            break:
+                movl aux,%ecx
+
+                subl $1,%ecx
+                jmp loop_lungime
+
+    print:
+        movl i,%eax
+        movl j,%ecx
+        lea mres,%edi
+
+        movl n,%ebx
+        mull %ebx
+        addl %ecx,%eax
+
+        pushl (%edi,%eax,4)
+        pushl $fs3
+        call printf
+        addl $8,%esp
+
+        jmp exit
 
 exit:
     mov $1,%eax
