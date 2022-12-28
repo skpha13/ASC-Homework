@@ -256,7 +256,7 @@ matrix_mult:
                 movl -4(%ebp),%eax
                 mull 20(%ebp)
                 addl %ecx,%eax
-                lea mres,%edi
+                mov 16(%ebp),%edi
                 addl %ebx,(%edi,%eax,4)
 
                 addl $1,-8(%ebp)
