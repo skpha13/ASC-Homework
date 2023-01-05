@@ -400,18 +400,28 @@ cerinta_2:
     print:
         movl i,%eax
         movl j,%ecx
+
+        movl k,%ebx
+        cmp $1,%ebx
+        je caz_special_0
+
         lea mres,%edi
+        jmp caz_special_1
 
-        movl n,%ebx
-        mull %ebx
-        addl %ecx,%eax
+        caz_special_0:
+            lea matrice,%edi
 
-        pushl (%edi,%eax,4)
-        pushl $fs3
-        call printf
-        addl $8,%esp
+        caz_special_1:
+            movl n,%ebx
+            mull %ebx
+            addl %ecx,%eax
 
-        jmp exit
+            pushl (%edi,%eax,4)
+            pushl $fs3
+            call printf
+            addl $8,%esp
+
+            jmp exit
 
 exit:
     mov $1,%eax
