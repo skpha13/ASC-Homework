@@ -114,6 +114,7 @@ afisare:
     pushl %ebp
     mov %esp,%ebp
     pushl %edi
+    pushl %ebx
 
     # n = 12(%ebp)
     # matrice = 8(%ebp)
@@ -170,6 +171,7 @@ afisare:
 
     iesire_2:
         addl $8,%esp
+        popl %ebx
         popl %edi
         popl %ebp
         ret
