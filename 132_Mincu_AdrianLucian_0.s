@@ -411,9 +411,13 @@ cerinta_2:
             addl %ecx,%eax
 
             pushl (%edi,%eax,4)
-            pushl $fs3
+            pushl $fs
             call printf
             addl $8,%esp
+
+            pushl $0
+            call fflush
+            add $4,%esp
 
             jmp exit
 
