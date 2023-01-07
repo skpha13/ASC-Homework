@@ -157,6 +157,12 @@ afisare:
             jmp for_coloana
 
         salt:
+            movl $4,%eax
+            movl $1,%ebx
+            movl $fs2,%ecx
+            movl $1,%edx
+            int $0x80
+
             movl -4(%ebp),%eax
             movl $0,%ecx
 
@@ -411,17 +417,17 @@ cerinta_2:
             addl %ecx,%eax
 
             pushl (%edi,%eax,4)
-            pushl $fs
+            pushl $fs3
             call printf
             addl $8,%esp
-
-            pushl $0
-            call fflush
-            add $4,%esp
 
             jmp exit
 
 exit:
+    pushl $0
+    call fflush
+    add $4,%esp
+
     mov $1,%eax
     xor %ebx,%ebx
     int $0x80
