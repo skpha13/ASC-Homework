@@ -157,11 +157,9 @@ afisare:
             jmp for_coloana
 
         salt:
-            movl $4,%eax
-            movl $1,%ebx
-            movl $fs2,%ecx
-            movl $1,%edx
-            int $0x80
+            pushl $fs2
+            call printf
+            addl $4,%esp
 
             movl -4(%ebp),%eax
             movl $0,%ecx
